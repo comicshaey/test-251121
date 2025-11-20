@@ -8,29 +8,122 @@
   <style>
     :root{--black:#111;--line:#e5e5e5;--sun:#c8352d;--sat:#1e5fbf}
     *{box-sizing:border-box}
-    body{margin:0;background:#fff;color:#111;font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif}
+    body{
+      margin:0;
+      background:#fff;
+      color:#111;
+      font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+    }
     .wrap{max-width:1060px;margin:24px auto;padding:0 16px}
     h1{font-size:1.35rem;margin:0 0 10px}
     .muted{color:#666;font-size:.92rem;margin:0 0 14px}
-    .btn{display:inline-block;padding:10px 14px;border-radius:12px;border:1px solid var(--black);text-decoration:none;color:#fff;background:#111;font-weight:800}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 14px}
-    .month{margin:18px 0 12px;position:sticky;top:0;background:#fff;padding:6px 0;z-index:5;border-bottom:1px solid #f1f1f1}
+    .btn{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid var(--black);
+      text-decoration:none;
+      color:#fff;
+      background:#111;
+      font-weight:800;
+    }
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:8px 0 14px;
+    }
+    .month{
+      margin:18px 0 12px;
+      position:sticky;
+      top:0;
+      background:#fff;
+      padding:6px 0;
+      z-index:5;
+      border-bottom:1px solid #f1f1f1;
+    }
     .month h2{font-size:1.15rem;margin:0}
-    .grid{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:22px}
-    .row{display:grid;grid-template-columns:repeat(7,1fr)}
-    .head{background:#fafafa;font-weight:900;text-align:center;padding:10px 8px;border-bottom:1px solid var(--line)}
-    .cell{min-height:120px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px;display:flex;flex-direction:column;gap:6px}
+    .grid{
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      margin-bottom:22px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+    }
+    .head{
+      background:#fafafa;
+      font-weight:900;
+      text-align:center;
+      padding:10px 8px;
+      border-bottom:1px solid var(--line);
+    }
+    .cell{
+      min-height:120px;
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
     .cell:nth-child(7n){border-right:none}
-    .date{font-size:.9rem;font-weight:900;margin-bottom:2px}
-    .txt{flex:1;min-height:0;white-space:pre-wrap;line-height:1.35;overflow:auto;overflow-wrap:anywhere;padding-right:2px}
+    .date{
+      font-size:.9rem;
+      font-weight:900;
+      margin-bottom:2px;
+    }
+    .txt{
+      flex:1;
+      min-height:0;
+      white-space:pre-wrap;
+      line-height:1.35;
+      overflow:auto;
+      overflow-wrap:anywhere;
+      padding-right:2px;
+    }
+
+    /* 일/토 색상 */
     .row:first-child > .head:nth-child(1){ color:var(--sun) }
     .row:first-child > .head:nth-child(7){ color:var(--sat) }
     .row:not(:first-child) > .cell:nth-child(1) .date{ color:var(--sun) }
     .row:not(:first-child) > .cell:nth-child(7) .date{ color:var(--sat) }
 
-    .bottom-nav{display:flex;justify-content:center;gap:12px;margin:30px 0}
-    footer{margin:12px 0 8px;text-align:center;color:#555;font-size:.9rem}
-    @media print{ .toolbar{display:none} .bottom-nav{display:none} .wrap{max-width:none} .month{position:static} .txt{overflow:visible} }
+    /* 날짜(주간 달력 링크) 스타일 */
+    .date-link{
+      color:inherit;
+      text-decoration:none;
+      padding:2px 4px;
+      border-radius:6px;
+      display:inline-block;
+    }
+    .date-link:hover{
+      text-decoration:underline;
+      background:#f3f3f3;
+    }
+
+    .bottom-nav{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin:30px 0;
+    }
+    footer{
+      margin:12px 0 8px;
+      text-align:center;
+      color:#555;
+      font-size:.9rem;
+    }
+    @media print{
+      .toolbar{display:none}
+      .bottom-nav{display:none}
+      .wrap{max-width:none}
+      .month{position:static}
+      .txt{overflow:visible}
+    }
   </style>
 </head>
 <body>
@@ -39,10 +132,14 @@
     <div class="toolbar" style="justify-content:space-between">
       <a class="btn" href="/"> 메인으로 돌아가기</a>
       <a class="btn" href="/calendar/">학년도별 모음으로</a>
+      <button onclick="window.print()" class="btn">인쇄/PDF</button>
     </div>
 
     <h1 id="title">학년도별 월간 업무 일정 달력</h1>
-    <p class="muted" id="rangeText">기간: 자동 계산 중…</p>
+    <p class="muted" id="rangeText">
+      기간: 자동 계산 중…<br/>
+      · 날짜 숫자를 클릭하면 해당 주간 달력(1주)이 열립니다.
+    </p>
 
     <!-- 달력 본문 -->
     <div id="root"></div>
@@ -106,7 +203,8 @@
       const endBase = addMonths(start, COUNT-1)
       const end = new Date(endBase.getFullYear(), endBase.getMonth()+1, 0)
       const endWeek = wdK(end.getDay())
-      rangeText.textContent = `기간: ${start.getFullYear()}.${start.getMonth()+1}.1.(${startWeek}) ~ ${end.getFullYear()}.${end.getMonth()+1}.${end.getDate()}.(${endWeek}) · ${COUNT}개월`
+      rangeText.firstChild.textContent =
+        `기간: ${start.getFullYear()}.${start.getMonth()+1}.1.(${startWeek}) ~ ${end.getFullYear()}.${end.getMonth()+1}.${end.getDate()}.(${endWeek}) · ${COUNT}개월`
     })()
 
     function renderMonth(y,m){
@@ -114,24 +212,48 @@
       const last  = new Date(y,m,0)
       const start = first.getDay()
       const weeks = Math.ceil((start + last.getDate())/7)
+
       const monthEl = document.createElement('section')
       monthEl.className = 'month'
       monthEl.innerHTML = `<h2>${y}년 ${m}월</h2>`
       root.appendChild(monthEl)
+
       const grid = document.createElement('div')
       grid.className = 'grid'
       root.appendChild(grid)
+
       const days = ['일','월','화','수','목','금','토']
       let html = `<div class="row">${days.map(d=>`<div class="head">${d}</div>`).join('')}</div>`
+
       let day = 1 - start
       for(let w=0; w<weeks; w++){
         html += '<div class="row">'
         for(let i=0;i<7;i++,day++){
           const inMonth = day>=1 && day<=last.getDate()
-          const key = inMonth ? ymd(y,m,day) : ''
-          const text = inMonth ? (NOTES[key]||'') : ''
+
+          let text = ''
+          let dateHtml = ''
+
+          if(inMonth){
+            const key = ymd(y,m,day)
+            text = NOTES[key] || ''
+
+            // 이 날짜가 포함된 주의 "일요일" 기준으로 주간 달력 링크 생성
+            const weekStart = new Date(y, m-1, day)
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay()) // 일요일로 이동
+            const weekStartStr = ymd(
+              weekStart.getFullYear(),
+              weekStart.getMonth()+1,
+              weekStart.getDate()
+            )
+            const weeklyTitle = encodeURIComponent(`${y}년 ${m}월 ${day}일이 포함된 주간 일정`)
+            const weeklyUrl =
+              `/calendar/calendar-weekly-academic.html?start=${weekStartStr}&weeks=1&title=${weeklyTitle}`
+            dateHtml = `<a href="${weeklyUrl}" class="date-link">${day}</a>`
+          }
+
           html += `<div class="cell">`
-          html += `<div class="date">${inMonth?day:''}</div>`
+          html += `<div class="date">${dateHtml}</div>`
           html += `<div class="txt">${escapeHtml(text)}</div>`
           html += `</div>`
         }

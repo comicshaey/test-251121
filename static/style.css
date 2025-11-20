@@ -1,0 +1,212 @@
+/* 251120목 */
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#fff;
+  color:#000;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Apple SD Gothic Neo,'Malgun Gothic',sans-serif;
+  line-height:1.5;
+  word-break:keep-all;
+}
+
+a{text-decoration:none;color:inherit}
+
+/* 메인 레이아웃 */
+.shell{
+  max-width:1100px;
+  margin:0 auto;
+  padding:20px;
+}
+
+main{
+  max-width:880px;
+  margin:0 auto;
+  padding:24px 16px;
+}
+
+/* 헤더 */
+.site-header{background:#fff;border-bottom:1px solid #e8e8ef}
+.site-header h1{margin:0;font-size:28px}
+.sub{margin:.25rem 0 0;color:#000;font-size:14px}
+.site-footer{padding:24px 0;color:#000;border-top:1px solid #eee}
+
+/* 카드박스 */
+.card{
+  background:#fff;
+  border:1px solid #e6e6f0;
+  border-radius:16px;
+  padding:18px;
+  margin:16px 0;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+
+h2{margin:0 0 12px;font-size:18px}
+
+/* Grid */
+.grid{display:grid;gap:12px}
+.grid > *{min-width:0;} /* 🟢 내부 확장 방지 */
+
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+@media (max-width:900px){
+  .grid.two, .grid.three{
+    grid-template-columns:1fr;
+  }
+}
+
+/* 폼공통 */
+label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-weight:600;
+  font-size:14px;
+}
+
+input,select,button,textarea{font:inherit}
+
+input[type="text"],input[type="number"],input[type="time"],
+input[type="date"],select,textarea{
+  padding:10px 12px;
+  border:1px solid #d9d9e3;
+  border-radius:12px;
+  background:#fff;
+  outline:none;
+  min-width:0; /* 🟢 모바일 숫자 잘림 방지 */
+}
+
+textarea{min-height:100px}
+input:disabled{background:#f6f7fb;color:#000}
+
+small{
+  color:#666;
+  font-weight:400;
+  font-size:0.85em;
+}
+
+/* 버튼 공통 */
+.btn{
+  display:block;
+  width:100%;
+  max-width:320px;
+  margin:10px auto 0;
+  padding:12px 20px;
+  border-radius:10px;
+  font-weight:600;
+  background:#000;
+  color:#fff;
+  border:1px solid #000;
+  cursor:pointer;
+  transition:0.2s;
+  text-align:center;
+}
+.btn:hover{background:#222;transform:translateY(-2px)}
+
+@media (min-width:900px){
+  .btn{display:inline-block;width:auto;max-width:none;margin-top:0}
+  .btn + .btn{margin-left:10px;margin-top:0}
+}
+
+.btn, .btn-home, footer a.btn{
+  background:#000 !important;
+  color:#fff !important;
+  border:1px solid #000 !important;
+}
+.btn:hover{ filter:brightness(1.2); }
+
+/* 연한 버튼 */
+.btn-lightgrey{
+  display:inline-block;
+  padding:8px 14px;
+  font-size:0.9rem;
+  background:#f2f2f2;
+  color:#333;
+  border:1px solid #ddd;
+  border-radius:6px;
+  cursor:pointer;
+}
+.btn-lightgrey:hover{background:#e6e6e6}
+
+/* 제목 */
+h1{
+  font-size:clamp(1.5rem,4vw,28px);
+  margin:0 0 12px;
+  text-align:center;
+}
+
+p{line-height:1.65;margin:10px 0;color:#333}
+.muted{color:#666;font-size:0.9rem}
+
+/* 🌟 테이블 최종 안정화 */
+.table-wrap{
+  overflow-x:auto;
+  width:100%;
+  margin-top:6px;
+}
+
+.table-wrap table{
+  border-collapse:collapse;
+  min-width:800px;   /* 🟢 덮어쓰는 자동폭 대신 고정 폭 */
+  width:100%;
+  border:1px solid #ececf3;
+  border-radius:12px;
+}
+
+th,td{
+  border-bottom:1px solid #eee;
+  padding:10px 12px;
+  text-align:left;
+  font-size:14px;
+  vertical-align:middle;
+}
+
+thead th{
+  background:#fafafb;
+  font-weight:700;
+  font-size:15px; /* 🟢 가독성 향상 */
+}
+
+tfoot td{background:#fafafb;font-weight:700}
+
+td:last-child{
+  width:1%;
+  white-space:nowrap;
+  padding-right:6px; 
+}
+
+.numeric{text-align:right}
+.right{text-align:right}
+.center{text-align:center}
+
+/* 결과 */
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:12px}
+.result-item{border-radius:12px;border:1px solid #ececf5;padding:10px 12px;background:#fafafa}
+.result-item-wide{grid-column:1 / -1;background:#000;color:#fff;border-color:#000}
+.result-value{margin-top:4px;font-size:16px;font-weight:600}
+.result-total{margin-top:4px;font-size:20px;font-weight:700}
+
+.section{border:1px solid #e5e5e5;border-radius:12px;padding:16px 18px;margin:18px 0}
+hr{border:none;border-top:1px solid #ddd;margin:28px 0}
+
+footer{
+  margin:40px 0 20px;
+  color:#333;
+  font-size:0.9rem;
+  text-align:center;
+}
+
+input[type="radio"]{
+  vertical-align:middle;
+  margin-top:-2px;
+}
+
+/* 모바일 튜닝 */
+@media (max-width:600px){
+  .shell{padding:16px 14px;}
+  .card{padding:16px;}
+  footer{font-size:0.9rem;padding:0 10px;}
+}

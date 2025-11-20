@@ -73,18 +73,20 @@
     <h1>학년도별 업무 일정 달력 모음</h1>
 
     <p class="desc">
-      · 학년도별(당해년도 3월 ~ 익년도 2월) 일정 관리용 달력입니다. <br/>
-      · 월간 달력으로 큰 흐름을 보고, 주간 달력으로 세부 일정을 관리합니다.
+      ·개발자가 쓰기 위해 만든 기능임. 서버 DB 연결 없는 웹사이트라서 다른 접속자들은 못 씀.
+      ·학년도별 (당해년도 3월 ~ 익년도 2월) 일정 관리용 달력 <br/>
+      ·월간 달력으로 큰 흐름을 보고, 주간 달력으로 세부 일정 관리함. 
     </p>
 
     <!-- 월간 달력 카드 -->
     <div class="card">
       <h2 style="font-size:1.1rem;margin:0 0 8px">월간 달력</h2>
       <p class="desc" style="margin:0 0 10px">
-        · 학년도별(3월~다음해 2월) 월간 일정 한눈에 보기
+        ·학년도별 월간 달력. 일요일 시작.
+      
       </p>
       <a class="btn" href="/calendar/calendar-monthly-academic.html?start=2025-11&months=04&title=2025학년도">
-        2025학년도 (잔여 기간)
+        2025학년도 (4개월)
       </a>
       <a class="btn" href="/calendar/calendar-monthly-academic.html?start=2026-03&months=12&title=2026학년도">
         2026학년도 (12개월)
@@ -98,13 +100,11 @@
     <div class="card">
       <h2 style="font-size:1.1rem;margin:0 0 8px">주간 달력 (베타)</h2>
       <p class="desc" style="margin:0 0 10px">
-        · 일요일 시작, 주간 단위 상세 일정 확인용입니다. <br/>
-        · <code>start=YYYY-MM-DD</code>, <code>weeks=주 수</code>, <code>title=표시할 제목</code>을
-          쿼리스트링으로 조정 가능합니다.
+        ·주간 단위 상세 일정. 일요일 시작 <br/>
       </p>
       <a class="btn"
-         href="/calendar/calendar-weekly-academic.html?start=2025-11-16&weeks=4&title=2025학년도%20주간%20업무%20일정(4주)">
-        2025학년도 주간 달력 (4주 예시)
+         href="/calendar/calendar-weekly-academic.html?start=2025-11-16&weeks=25&title=2025학년도%20주간%20업무%20일정(4주)">
+        2025학년도 주간 달력 (11~2월)
       </a>
     </div>
 

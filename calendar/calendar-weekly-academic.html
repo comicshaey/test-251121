@@ -175,7 +175,7 @@
     // 쿼리 파라미터
     const q = new URLSearchParams(location.search);
     const START_PARAM = q.get("start"); 
-    const WEEKS = Math.max(1, Math.min(12, parseInt(q.get("weeks") || "4", 10)));
+    const WEEKS = Math.max(1, Math.min(12, parseInt(q.get("weeks") || "25", 10)));
     const CUSTOM_TITLE = q.get("title") || "";
 
     const titleEl = document.getElementById("title");
@@ -206,6 +206,26 @@
       '2025-12-31': '출입문개폐원 인건비 지출',
       '2026-01-02': '초등학교 겨울방학식',
     }
+
+    
+  <script>
+    // 쿼리 파라미터
+    const q = new URLSearchParams(location.search);
+    const START_PARAM = q.get("start"); 
+    const WEEKS = Math.max(1, Math.min(12, parseInt(q.get("weeks") || "4", 10)));
+    const CUSTOM_TITLE = q.get("title") || "";
+
+    const titleEl = document.getElementById("title");
+    const rangeTextEl = document.getElementById("rangeText");
+    const root = document.getElementById("root");
+    if (CUSTOM_TITLE) titleEl.textContent = CUSTOM_TITLE;
+
+    // 일정 데이터
+    const NOTES = {
+      '2026-03-01': '공휴일',
+    }
+
+    
 
     // 날짜 유틸
     const pad = n => (n < 10 ? "0" : "") + n;
@@ -314,5 +334,6 @@
   </script>
 </body>
 </html>
+
 
 

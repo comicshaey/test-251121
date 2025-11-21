@@ -1,11 +1,5 @@
-// 251121 유치원 시간제근무 기간제교원 인건비 계산기 스크립트
-// ·퇴직금 ≥ 365일
-// ·가족수당: 첫째/둘째/셋째 이상 구분
-// ·정근수당 가산금: 자동 계산 안 함(수기 입력)
-// ·월별 수당 자동 채우기 버튼 / 정근수당 일할계산 버튼
-// ·산재보험 0.966% 포함
-// ·원단위 절삭(10원 단위 버림)
-// ·수당별 기준 월액 + 계약기간 총 지급액 요약 테이블 추가
+// 251121 유치원 시간제근무 기간제교원 인건비 계산기 
+// 졸리다
 
 function $(id){return document.getElementById(id);}
 function toNumber(v){const n=Number(v);return Number.isFinite(n)?n:0;}
@@ -111,7 +105,6 @@ function applyAutoAllowances(){
         vac.value="";
       }
     }
-    // "정근수당 가산금"은 수기입력: 건드리지 않음
   });
 }
 
@@ -178,8 +171,9 @@ function buildMonthTable(){
     if(!map.has(ym))map.set(ym,{sem:0,vac:0,noaf:0});
     const cell=map.get(ym);
 
-    if(inRange(cur,vac))cell.vac++;
-    else if(inRange(cur,noAf))cell.noaf++;
+    // 방과후 미운영(4h) > 방학(8h) > 학기중
+    if(inRange(cur,noAf)) cell.noaf++;
+    else if(inRange(cur,vac)) cell.vac++;
     else cell.sem++;
 
     cur.setDate(cur.getDate()+1);
@@ -243,8 +237,12 @@ function calcMonthly(){
   const R_PEN=0.045;
   const R_HEAL=0.03545;
   const R_LTC=0.1267*R_HEAL;
-  const R_EMP=0.009;
+  const R_EMP=0.0175;
   const R_IND=0.00966; // 산재보험 0.966%
+
+  // ----- 기본급 시간당 단가 (항목 분리용) -----
+  const baseSemHour = base.semMonthHours ? base.base4Sem / base.semMonthHours : 0;
+  const baseVacHour = base.vacMonthHours ? base.base8Vac / base.vacMonthHours : 0;
 
   // ----- 수당별 합계용 사전 준비 -----
   const allowanceDefs=[];
@@ -288,16 +286,44 @@ function calcMonthly(){
     const daySum=sem+vac+noaf;
     totalDays+=daySum;
 
+    // ----- 월별 기본급 + 수당 별도 산출 -----
     let wage=0;
-    if(vac===0&&noaf===0&&sem>0){
-      // 방학·미운영 0, 학기중만 있는 달 = 학기중 전액 지급
-      wage=floorTo10(base.base4Sem+base.allowSem);
+    const detailLines=[];
+
+    // 기본급
+    let baseAmt=0;
+    if(vac===0 && noaf===0 && sem>0){
+      // 학기중만 있는 달 → 학기중 4시간 기준 월급 전액
+      baseAmt = floorTo10(base.base4Sem);
     }else{
-      const wSem=base.semHour*(sem+noaf)*4;
-      const wVac=base.vacHour*vac*8;
-      wage=floorTo10(wSem+wVac);
+      const partSem = baseSemHour * (sem+noaf) * 4;
+      const partVac = baseVacHour * vac * 8;
+      baseAmt = floorTo10(partSem + partVac);
+    }
+    if(baseAmt>0){
+      wage += baseAmt;
+      detailLines.push(`기본급: ${formatWon(baseAmt)}`);
     }
 
+    // 수당별
+    allowanceDefs.forEach(a=>{
+      let amt=0;
+      if(vac===0 && noaf===0 && sem>0){
+        // 학기중만 있는 달 → 학기중 수당 월액 전액
+        amt = a.semBase;
+      }else{
+        const partSem = a.semHour * (sem+noaf) * 4;
+        const partVac = a.vacHour * vac * 8;
+        amt = floorTo10(partSem + partVac);
+      }
+      if(amt>0){
+        wage += amt;
+        a.total += amt;
+        detailLines.push(`${a.name}: ${formatWon(amt)}`);
+      }
+    });
+
+    // 연 단위 분배 및 기관부담
     totalW+=wage;
     totalA+=perMonthAnnual;
 
@@ -309,19 +335,9 @@ function calcMonthly(){
     const orgSum=floorTo10(orgP+orgH+orgL+orgE+orgI);
     totalINS+=orgSum;
 
-    // ----- 수당별 월별 금액 합산 -----
-    allowanceDefs.forEach(a=>{
-      let amt=0;
-      if(vac===0&&noaf===0&&sem>0){
-        // 학기중만 있는 달 → 4시간 기준 월액 전액
-        amt=a.semBase;
-      }else{
-        const partSem=a.semHour*(sem+noaf)*4;
-        const partVac=a.vacHour*vac*8;
-        amt=partSem+partVac;
-      }
-      a.total+=floorTo10(amt);
-    });
+    const detailHtml = detailLines.length
+      ? detailLines.join("<br/>")
+      : "지급 없음";
 
     rowsHtml+=`<tr>
       <td>${ym}</td>
@@ -329,6 +345,7 @@ function calcMonthly(){
       <td>${vac}</td>
       <td>${noaf}</td>
       <td>${formatWon(wage)}</td>
+      <td style="text-align:left;font-size:0.9rem;line-height:1.4;">${detailHtml}</td>
       <td>${formatWon(perMonthAnnual)}</td>
       <td>${formatWon(wage+perMonthAnnual)}</td>
       <td>${formatWon(orgSum)}</td>
@@ -337,7 +354,7 @@ function calcMonthly(){
 
   const totalIncome=totalW+totalA;
 
-  // 월별 인건비/기관부담 테이블
+  // 월별 인건비/기관부담 테이블 (기본급·수당 내역 열 추가)
   wrap.innerHTML=`
   <div class="table-wrap">
     <table>
@@ -347,10 +364,11 @@ function calcMonthly(){
           <th>학기중</th>
           <th>방학</th>
           <th>미운영</th>
-          <th>월 임금</th>
+          <th>월 임금(합계)</th>
+          <th>기본급·수당 내역</th>
           <th>연 단위 분배</th>
           <th>월 총 지급</th>
-          <th>기관부담(연·건·장·고·산재)</th>
+          <th>사회보험료 기관부담금</th>
         </tr>
       </thead>
       <tbody>${rowsHtml}</tbody>
@@ -358,6 +376,7 @@ function calcMonthly(){
         <tr>
           <th colspan="4">합계</th>
           <th>${formatWon(totalW)}</th>
+          <th>-</th>
           <th>${formatWon(totalA)}</th>
           <th>${formatWon(totalIncome)}</th>
           <th>${formatWon(totalINS)}</th>
@@ -366,7 +385,7 @@ function calcMonthly(){
     </table>
   </div>
   <p class="hint">
-    ·기관부담금은 국민연금·건강보험·장기요양·고용보험·산재보험(0.966%) 기준 대략값으로, 실제 고지액과 다를 수 있습니다.
+    ·기관부담금 산재보험(0.966%)임. 개발자 근무 학교 기준.
   </p>`;
 
   // ----- 수당별 기준 월액 & 계약기간 총 지급액 요약 -----
@@ -399,8 +418,8 @@ function calcMonthly(){
       </table>
     </div>
     <p class="hint">
-      ·수당별 계약기간 총 지급액은 학기·방학·방과후 미운영 일수를 반영해 일할계산한 금액이며, 10원 단위로 절사했습니다.<br/>
-      ·정근수당 가산금은 입력하신 월액을 기준으로 위와 같이 합산됩니다.
+      ·수당별 계약기간 총 지급액은 학기·방학·방과후 미운영 일수를 반영해 일할계산한 금액. 원단위 절삭<br/>
+      ·정근수당 가산금은 입력한 보수월액 기준으로 함
     </p>`;
   }
 
@@ -414,10 +433,10 @@ function calcMonthly(){
       const retire=floorTo10(daily*30);
       wrap.innerHTML+=`
       <div class="card">
-        <h3 style="margin-top:0;font-size:15px;">퇴직금 개략 산정 (계속근로 1년 이상)</h3>
+        <h3 style="margin-top:0;font-size:15px;">퇴직금 대충 산정 (계속근로 1년 이상)</h3>
         <p class="hint">
           ·계약기간 달력일수: ${days}일 기준<br/>
-          ·계약기간 전체 임금을 달력일수로 나눈 1일 평균임금 × 30일을 10원 단위로 버림한 값입니다.
+          ·계약기간 전체 임금을 달력일수로 나눈 1일 평균임금 *30일. 원단위 절삭
         </p>
         <p><b>예상 퇴직금(개략): ${formatWon(retire)}</b></p>
       </div>`;
@@ -425,7 +444,7 @@ function calcMonthly(){
       wrap.innerHTML+=`
       <div class="card">
         <h3 style="margin-top:0;font-size:15px;">퇴직금 개략 산정</h3>
-        <p>계약기간이 1년 미만(달력일수 ${days}일)으로 퇴직금 지급 대상이 아닐 수 있습니다.</p>
+        <p>계약기간이 1년 미만(달력일수 ${days}일)으로 퇴직금 지급 대상이 아닐 수 있음</p>
       </div>`;
     }
   }

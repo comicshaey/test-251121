@@ -179,26 +179,43 @@
           </div>
 
           <div class="form-row">
-            <label>
-              부양 자녀 수 (가족수당 대상)
-              <div style="margin-top:4px;">
-                <div style="margin-bottom:4px;">
-                  첫째 자녀
-                  <input type="number" id="childFirst" min="0" step="1" value="0" style="max-width:90px;" />
-                </div>
-                <div style="margin-bottom:4px;">
-                  둘째 자녀
-                  <input type="number" id="childSecond" min="0" step="1" value="0" style="max-width:90px;" />
-                </div>
-                <div>
-                  셋째 이상 자녀
-                  <input type="number" id="childThirdPlus" min="0" step="1" value="0" style="max-width:90px;" />
-                </div>
+            <label>자녀 가족수당 지급 여부</label>
+            <div class="child-row" style="margin-top:6px; font-size:0.95rem;">
+              <div style="margin-bottom:4px;">
+                첫째 자녀:
+                <label style="margin-left:6px; margin-right:4px;">
+                  <input type="radio" name="firstChildFlag" value="N" checked /> 수당 없음
+                </label>
+                <label>
+                  <input type="radio" name="firstChildFlag" value="Y" /> 수당 지급
+                </label>
               </div>
-            </label>
-            <p class="hint">
-              ·실제 가족수당은 “부양 자녀 수” 기준이므로 첫째가 만 19세 초과로 제외되면 첫째=0, 둘째=1, 셋째이상=0처럼 입력하면 됨.<br/>
-              ·2025년 기준: 자녀 1명 50,000원 / 2명 80,000원 / 3명 이상 120,000원 (정상근무 기준 자녀수당 총액)
+              <div style="margin-bottom:4px;">
+                둘째 자녀:
+                <label style="margin-left:6px; margin-right:4px;">
+                  <input type="radio" name="secondChildFlag" value="N" checked /> 수당 없음
+                </label>
+                <label>
+                  <input type="radio" name="secondChildFlag" value="Y" /> 수당 지급
+                </label>
+              </div>
+              <div>
+                셋째 이상 자녀:
+                <label style="margin-left:6px; margin-right:4px;">
+                  <input type="radio" name="thirdChildFlag" value="N" checked /> 수당 없음
+                </label>
+                <label style="margin-right:6px;">
+                  <input type="radio" name="thirdChildFlag" value="Y" /> 수당 지급
+                </label>
+                <span>
+                  (수당 받는 셋째 이상 자녀 인원수:
+                  <input type="number" id="childThirdCount" min="0" step="1" value="0" style="max-width:80px;" /> 명)
+                </span>
+              </div>
+            </div>
+            <p class="hint" style="margin-top:4px;">
+              ·예시) 첫째는 만 19세 초과, 둘째만 가족수당 대상이면: 첫째=수당 없음, 둘째=수당 지급, 셋째 이상=0명, 수당 없음 선택.<br/>
+              ·자녀 수당 총액은 “수당 받는 자녀 수”에 따라 1명 50,000원 / 2명 80,000원 / 3명 이상 120,000원으로 계산.
             </p>
           </div>
         </div>
@@ -206,7 +223,8 @@
 
       <button type="button" class="btn" id="stepBaseBtn">1단계: 호봉·경력·가족 수당 반영</button>
       <p class="hint" style="margin-top:4px;">
-        ·호봉·경력·배우자·자녀 정보 입력 후 1단계를 누르면 기본급(4/8시간)과 교직수당·정액급식비·교원연구비·정근수당 가산금·가족수당이 자동 반영됩니다.
+        ·호봉·경력·배우자·자녀 정보 입력 후 1단계를 누르면 기본급(4/8시간)과 교직수당·정액급식비·교원연구비·가족수당이 자동 반영됩니다.<br/>
+        ·<b>정근수당 가산금</b>은 기관별·사례별로 달라질 수 있어 자동 계산하지 않고 <b>사용자가 직접 입력</b>하도록 했습니다.
       </p>
     </section>
 
@@ -215,7 +233,8 @@
       <h2>4. 월별 지급 수당</h2>
       <p class="hint">
         ·매월 정기적으로 지급되는 수당<br/>
-        ·교직수당·정액급식비·교원연구비·정근수당 가산금·가족수당은 1단계에서 입력값과 근무연수·가족사항에 따라 자동 채워짐(필요 시 수정 가능).
+        ·교직수당·정액급식비·교원연구비·가족수당은 “월별 수당 자동 채우기” 버튼으로 자동 입력 가능.<br/>
+        ·<b>정근수당 가산금은 자동 계산하지 않고, 근무연수·경력·기관 지침에 따라 수기 입력.</b>
       </p>
 
       <div class="table-wrap" style="margin-top:10px;">
@@ -257,7 +276,10 @@
         </table>
       </div>
 
-      <button type="button" class="btn" id="addAllowBtn">행 추가</button>
+      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn" id="applyAllowBtn">월별 수당 자동 채우기</button>
+        <button type="button" class="btn" id="addAllowBtn">행 추가</button>
+      </div>
     </section>
 
     <!-- 5. 연 단위 수당 -->
@@ -275,7 +297,7 @@
         </label>
         <p class="hint">
           ·업무편람 기준 “정근수당 연간 기준액(정상근무 1년분)” 입력.<br/>
-          ·학사일정(월별 일수)을 반영해 계약기간에 해당하는 일할계산 금액을 자동 산출해 아래 “정근수당” 행에 채워줌.
+          ·학사일정(월별 일수)을 반영해 계약기간에 해당하는 일할계산 금액을 자동 산출.
         </p>
       </div>
 
@@ -303,7 +325,10 @@
           </tbody>
         </table>
       </div>
-      <button type="button" class="btn" id="addAnnualBtn">행 추가</button>
+      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn" id="calcLongevityBtn">정근수당 일할계산</button>
+        <button type="button" class="btn" id="addAnnualBtn">행 추가</button>
+      </div>
     </section>
 
     <!-- 6. 방학·미운영 기간 설정 -->
@@ -336,7 +361,7 @@
 
       <h3 style="font-size:15px;margin:18px 0 6px;">방학 중 방과후 미운영 기간 (4시간 근무)</h3>
       <p class="hint">
-        ·방학기간 중 방과후과정 미운영으로 4시간 인건비 지급하는 기간 입력하쇼.<br />
+        ·방학기간 중 방과후과정 미운영으로 4시간 인건비 지급하는 기간 입력하세요.<br />
       </p>
 
       <div class="table-wrap">
@@ -414,6 +439,6 @@
 
   <script src="/static/global-loader.js?v=1"></script>
   <script src="/static/teacher-step-core.js?v=251120"></script>
-  <script src="script.js?v=25112003"></script>
+  <script src="script.js?v=25112102"></script>
 </body>
 </html>
